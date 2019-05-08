@@ -1,0 +1,42 @@
+﻿/*
+    This file is to show how CSS and other static resources (such as images) can be
+    used from a library project/package.
+*/
+
+.my-component {
+    border: 2px dashed red;
+    padding: 1em;
+    margin: 1em 0;
+    background-image: url('background.png');
+}
+
+
+.tree-node {
+    position: relative;
+}
+
+.tree-children {
+    position: relative;
+    margin-left: 20px;
+}
+
+.tree-parent > .collapse-icon {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.tree-parent > .loading-icon {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
+.tree-parent > .tree-node-text {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.tree-parent > .tree-node-text.selected {
+    background-color: #ddd;
+}

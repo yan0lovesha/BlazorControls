@@ -1,0 +1,63 @@
+﻿<button class="btn @buttonState" type="button" onclick="@PerformAction" disabled=@isWorking data-toggle="tooltip" data-placement="right" title="@error">
+    @if (isWorking)
+    {
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        @WorkingText
+    }
+    else
+    {
+        @if (succeeded && !failed)
+        {
+            <span class="oi oi-circle-check"></span>
+        }
+        else if (!succeeded && failed)
+        {
+            <span class="oi oi-circle-x"></span>
+        }
+        @Text
+    }
+</button>
+
+@functions {
+    [Parameter]
+    private Func<Task> Action { get; set; }
+    [Parameter]
+    private string Text { get; set; }
+    [Parameter]
+    private string WorkingText { get; set; }
+
+    bool isWorking;
+    bool succeeded;
+    bool failed;
+    string error;
+    string buttonState = "btn-primary";
+
+    async Task PerformAction()
+    {
+        isWorking = true;
+        buttonState = "btn-primary";
+        succeeded = false;
+        failed = false;
+        StateHasChanged();
+
+        try
+        {
+            await Action();
+            isWorking = false;
+            succeeded = true;
+            failed = false;
+            buttonState = "btn-success";
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            isWorking = false;
+            succeeded = false;
+            failed = true;
+            buttonState = "btn-danger";
+            error = ex.Message;
+            StateHasChanged();
+        }
+
+    }
+}

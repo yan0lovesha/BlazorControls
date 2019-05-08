@@ -1,0 +1,31 @@
+﻿@using Lovesha.BlazorControls.TreeView.Components
+
+<CascadingValue Value=this>
+    @foreach (var rootNode in RootNodes)
+    {
+        <TreeNode NodeObj="@rootNode"></TreeNode>
+    }
+</CascadingValue>
+
+@functions {
+    [Parameter]
+    private List<TreeNodeObject> RootNodes { get; set; }
+    [Parameter]
+    public TreeNodeObject SelectedNode { get; set; }
+    [Parameter]
+    private bool ExpandAll { get; set; }
+
+    [Parameter]
+    public Action<TreeNodeObject> OnNodeSelected { get; set; } = (nodeObj) => { };
+    [Parameter]
+    public Action<TreeNodeObject> OnNodeExpanded { get; set; } = (nodeObj) => { };
+    [Parameter]
+    public Action<TreeNodeObject> OnNodeCollapsed { get; set; } = (nodeObj) => { };
+
+    public void NodeSelected(TreeNodeObject selectedNodeObj)
+    {
+        SelectedNode = selectedNodeObj;
+        StateHasChanged();
+        OnNodeSelected(selectedNodeObj);
+    }
+}
