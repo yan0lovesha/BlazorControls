@@ -4,6 +4,8 @@ I used to build some tools for my self for simplify some boring manual works. Th
 
 I also used to use latest or intreseting technology to build it up. This time it is based on [Blazor](https://blazor.net). Below is the controls currently implemented as a Blazor Libaray.
 
+It is using Bootstrap which comes with Blazor by default.
+
 ## Controls
 
 * ### ActionButton
