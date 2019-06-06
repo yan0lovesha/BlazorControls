@@ -1,0 +1,15 @@
+﻿@using Newtonsoft.Json.Linq
+@using Lovesha.BlazorControls.TreeView
+@using Lovesha.BlazorControls.JsonViewer
+
+@if (Data != null)
+{
+    <div class="detailCardContainer">
+        <JsonViewer Data="@Data"></JsonViewer>
+    </div>
+}
+
+@functions {
+    [Parameter]
+    private JToken Data { get; set; }
+}

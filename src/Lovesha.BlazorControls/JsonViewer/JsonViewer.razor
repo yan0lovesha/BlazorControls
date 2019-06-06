@@ -9,16 +9,11 @@
     [Parameter]
     private JToken Data { get; set; }
 
-    private List<TreeNodeObject> _rootNodes;
-
     private List<TreeNodeObject> RootNodes
     {
         get
         {
-            if (_rootNodes == null)
-            {
-                _rootNodes = new List<TreeNodeObject>() { GetNodeObjFromJsonField("", Data) };
-            }
+            var _rootNodes = new List<TreeNodeObject>() { GetNodeObjFromJsonField("", Data) };
             return _rootNodes;
         }
     }

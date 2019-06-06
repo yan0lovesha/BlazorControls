@@ -40,3 +40,12 @@
 .tree-parent > .tree-node-text.selected {
     background-color: #ddd;
 }
+
+/*.detailCardContainer {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    bottom: 5px;
+    width: 500px;
+    border: 1px solid #000;
+}*/
