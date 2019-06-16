@@ -8,10 +8,10 @@
         }
         else
         {
-            <span class="collapse-icon @Icon" onclick="@ExpandNode"></span>
+            <span class="collapse-icon @Icon" @onclick="@ExpandNode"></span>
         }
-        @*<i class='collapse-icon fas @Icon' onclick="@ExpandNode"></i>*@
-        <span class="tree-node-text @SelectedStyle" onclick="@NodeTextClicked">@NodeObj.Text</span>
+        @*<i class='collapse-icon fas @Icon' @onclick="@ExpandNode"></i>*@
+        <span class="tree-node-text @SelectedStyle" @onclick="@NodeTextClicked">@NodeObj.Text</span>
     </div>
     @if (NodeObj.IsExpanded && NodeObj.ChildNodes.Count > 0)
     {
@@ -24,7 +24,7 @@
     }
 </div>
 
-@functions {
+@code {
     [Parameter]
     private TreeNodeObject NodeObj { get; set; }
 

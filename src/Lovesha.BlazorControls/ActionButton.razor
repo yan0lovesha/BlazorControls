@@ -1,4 +1,4 @@
-﻿<button class="btn @buttonState" type="button" onclick="@PerformAction" disabled=@isWorking data-toggle="tooltip" data-placement="right" title="@error">
+﻿<button class="btn @buttonState" type="button" @onclick="@PerformAction" disabled=@isWorking data-toggle="tooltip" data-placement="right" title="@error">
     @if (isWorking)
     {
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -18,7 +18,7 @@
     }
 </button>
 
-@functions {
+@code {
     [Parameter]
     private Func<Task> Action { get; set; }
     [Parameter]
@@ -38,7 +38,7 @@
         buttonState = "btn-primary";
         succeeded = false;
         failed = false;
-        StateHasChanged();
+        //StateHasChanged();
 
         try
         {
@@ -47,7 +47,7 @@
             succeeded = true;
             failed = false;
             buttonState = "btn-success";
-            StateHasChanged();
+          //  StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -56,7 +56,7 @@
             failed = true;
             buttonState = "btn-danger";
             error = ex.Message;
-            StateHasChanged();
+            //StateHasChanged();
         }
 
     }
