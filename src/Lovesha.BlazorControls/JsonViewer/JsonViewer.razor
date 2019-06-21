@@ -6,63 +6,69 @@
 </div>
 
 @code {
-    [Parameter]
-    private JToken Data { get; set; }
+[Parameter]
+private JToken Data { get; set; }
 
-    private List<TreeNodeObject> RootNodes
+private List<TreeNodeObject> RootNodes
+{
+    get
     {
-        get
-        {
-            var _rootNodes = new List<TreeNodeObject>() { GetNodeObjFromJsonField("", Data) };
-            return _rootNodes;
-        }
+        var _rootNodes = new List<TreeNodeObject>() { GetNodeObjFromJsonField("", Data) };
+        return _rootNodes;
     }
+}
 
-    private bool JTokenExpandable(JToken jToken)
-    {
-        return jToken.Type == JTokenType.Array || jToken.Type == JTokenType.Object;
-    }
+private bool JTokenExpandable(JToken jToken)
+{
+    return jToken.Type == JTokenType.Array || jToken.Type == JTokenType.Object;
+}
 
-    private TreeNodeObject GetNodeObjFromJsonField(string key, JToken jToken)
+private TreeNodeObject GetNodeObjFromJsonField(string key, JToken jToken)
+{
+    if (jToken.Type == JTokenType.Array)
     {
-        if (jToken.Type == JTokenType.Array)
+        return new TreeNodeObject()
         {
-            return new TreeNodeObject()
-            {
-                Text = string.IsNullOrWhiteSpace(key) ? $"[...]" : $"{key} : [...]",
-                NodeData = jToken,
-                AlwaysReloadChildren = false,
-                IsExpanded = true,
-                ChildNodes = jToken.ToObject<JArray>().Select((a, i) => GetNodeObjFromJsonField(i.ToString(), a)).ToList(),
-            };
-        }
-        else if (jToken.Type == JTokenType.Object)
-        {
-            return new TreeNodeObject()
-            {
-                Text = string.IsNullOrWhiteSpace(key) ? $"{{...}}" : $"{key} : {{...}}",
-                NodeData = jToken,
-                AlwaysReloadChildren = false,
-                IsExpanded = true,
-                ChildNodes = jToken.Children<JProperty>().Select((p) => GetNodeObjFromJsonField(p.Name, p)).ToList(),
-            };
-        }
-        else if (jToken.Type == JTokenType.Property)
-        {
-            return new TreeNodeObject()
-            {
-                Text = $"{key} : {jToken.ToObject<JProperty>().Value.ToString()}",
-                IsExpanded = true,
-                NodeData = jToken,
-            };
-        }
-        else
-        {
-            return new TreeNodeObject()
-            {
-                Text = jToken.ToString(),
-                NodeData = jToken
-            };
-        }
+            Text = string.IsNullOrWhiteSpace(key) ? $"[...]" : $"{key} : [...]",
+            NodeData = jToken,
+            AlwaysReloadChildren = false,
+            IsExpanded = true,
+            ChildNodes = jToken.ToObject<JArray>().Select((a, i) => GetNodeObjFromJsonField(i.ToString(), a)).ToList(),
+        };
     }
+    else if (jToken.Type == JTokenType.Object)
+    {
+        return new TreeNodeObject()
+        {
+            Text = string.IsNullOrWhiteSpace(key) ? $"{{...}}" : $"{key} : {{...}}",
+            NodeData = jToken,
+            AlwaysReloadChildren = false,
+            IsExpanded = true,
+            ChildNodes = jToken.Children<JProperty>().Select((p) => GetNodeObjFromJsonField(p.Name, p)).ToList(),
+        };
+    }
+    else if (jToken.Type == JTokenType.Property)
+    {
+        return new TreeNodeObject()
+        {
+            Text = $"{key}", //$"{key} : {jToken.ToObject<JProperty>().Value.ToString()}",
+            IsExpanded = true,
+            NodeData = jToken,
+            ChildNodes = new List<TreeNodeObject> {
+                new TreeNodeObject
+                {
+                    Text = jToken.ToObject<JProperty>().Value.ToString()
+                }
+            }
+        };
+    }
+    else
+    {
+        return new TreeNodeObject()
+        {
+            Text = jToken.ToString(),
+            NodeData = jToken
+        };
+    }
+}
 }
