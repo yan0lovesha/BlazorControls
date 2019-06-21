@@ -8,17 +8,17 @@
         }
         else if (status == NodeStatus.LoadedFailed)
         {
-            <span class="tree-node-icon fas fa-exclamation-triangle" role="status" aria-hidden="true"></span>
+            <span class="tree-node-icon collapsable fas fa-exclamation-triangle" role="status" aria-hidden="true" title="Failed - Click to retry" @onclick="@ExpandNode"></span>
         }
         else if (NodeObj.ChildNodes?.Count > 0 || NodeObj.LoadChildNodesFunc != null)
         {
-            <span class="tree-node-icon collapsable @Icon" @onclick="@ExpandNode"></span>
+            <span class="tree-node-icon collapsable @Icon" role="status" aria-hidden="true" @onclick="@ExpandNode"></span>
         }
         else
         {
             <span class='tree-node-icon fas'></span>
         }
-        <span class="tree-node-text @SelectedStyle" @onclick="@NodeTextClicked">@NodeObj.Text</span>
+        <span class="tree-node-text @SelectedStyle" role="status" aria-hidden="true" @onclick="@NodeTextClicked">@NodeObj.Text</span>
     </div>
     @if (NodeObj.IsExpanded && NodeObj.ChildNodes.Count > 0)
     {
