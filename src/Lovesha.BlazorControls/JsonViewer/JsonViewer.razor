@@ -51,15 +51,9 @@ private TreeNodeObject GetNodeObjFromJsonField(string key, JToken jToken)
     {
         return new TreeNodeObject()
         {
-            Text = $"{key}", //$"{key} : {jToken.ToObject<JProperty>().Value.ToString()}",
+            Text = $"<span class=\"tree-node-key\">{key}</span><span class=\"tree-node-value\">{jToken.ToObject<JProperty>().Value.ToString()}</span>",
             IsExpanded = true,
             NodeData = jToken,
-            ChildNodes = new List<TreeNodeObject> {
-                new TreeNodeObject
-                {
-                    Text = jToken.ToObject<JProperty>().Value.ToString()
-                }
-            }
         };
     }
     else

@@ -39,6 +39,13 @@
     cursor: pointer;
 }
 
+    .tree-parent > .tree-node-text > .tree-node-key {
+        font-weight: bold;
+    }
+    .tree-parent > .tree-node-text > .tree-node-value {
+        margin-left: 15px;
+    }
+
 .tree-parent > .tree-node-text.selected {
     background-color: #ddd;
 }

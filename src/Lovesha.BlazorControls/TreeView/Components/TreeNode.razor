@@ -18,7 +18,7 @@
         {
             <span class='tree-node-icon fas'></span>
         }
-        <span class="tree-node-text @SelectedStyle" role="status" aria-hidden="true" @onclick="@NodeTextClicked">@NodeObj.Text</span>
+        <span class="tree-node-text @SelectedStyle" role="status" aria-hidden="true" @onclick="@NodeTextClicked">@((MarkupString)NodeObj.Text)</span>
     </div>
     @if (NodeObj.IsExpanded && NodeObj.ChildNodes.Count > 0)
     {
