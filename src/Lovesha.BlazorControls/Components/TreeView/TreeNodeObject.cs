@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Lovesha.BlazorControls.TreeView
+namespace Lovesha.BlazorControls.Components.TreeView
 {
     public class TreeNodeObject
     {
