@@ -1,0 +1,68 @@
+﻿@using Newtonsoft.Json.Linq
+@using Lovesha.BlazorControls.Components.TreeView
+
+<div class="JsonViewerContainer">
+    <TreeView RootNodes="@RootNodes" ExpandAll="true"></TreeView>
+</div>
+
+@code {
+[Parameter]
+private JToken Data { get; set; }
+
+private List<TreeNodeObject> RootNodes
+{
+    get
+    {
+        var _rootNodes = new List<TreeNodeObject>() { GetNodeObjFromJsonField("", Data) };
+        return _rootNodes;
+    }
+}
+
+private bool JTokenExpandable(JToken jToken)
+{
+    return jToken.Type == JTokenType.Array || jToken.Type == JTokenType.Object;
+}
+
+private TreeNodeObject GetNodeObjFromJsonField(string key, JToken jToken)
+{
+    if (jToken.Type == JTokenType.Array)
+    {
+        return new TreeNodeObject()
+        {
+            Text = string.IsNullOrWhiteSpace(key) ? $"[...]" : $"{key} : [...]",
+            NodeData = jToken,
+            AlwaysReloadChildren = false,
+            IsExpanded = true,
+            ChildNodes = jToken.ToObject<JArray>().Select((a, i) => GetNodeObjFromJsonField(i.ToString(), a)).ToList(),
+        };
+    }
+    else if (jToken.Type == JTokenType.Object)
+    {
+        return new TreeNodeObject()
+        {
+            Text = string.IsNullOrWhiteSpace(key) ? $"{{...}}" : $"{key} : {{...}}",
+            NodeData = jToken,
+            AlwaysReloadChildren = false,
+            IsExpanded = true,
+            ChildNodes = jToken.Children<JProperty>().Select((p) => GetNodeObjFromJsonField(p.Name, p)).ToList(),
+        };
+    }
+    else if (jToken.Type == JTokenType.Property)
+    {
+        return new TreeNodeObject()
+        {
+            Text = $"<span class=\"tree-node-key\">{key}</span><span class=\"tree-node-value\">{jToken.ToObject<JProperty>().Value.ToString()}</span>",
+            IsExpanded = true,
+            NodeData = jToken,
+        };
+    }
+    else
+    {
+        return new TreeNodeObject()
+        {
+            Text = jToken.ToString(),
+            NodeData = jToken
+        };
+    }
+}
+}

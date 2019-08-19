@@ -1,16 +1,25 @@
-﻿@using Lovesha.BlazorControls.TreeView
+﻿@using Lovesha.BlazorControls
 
 <div class="tree-node">
     <div class="tree-parent">
-        @if (isLoading)
+        @if (status == NodeStatus.Loading)
         {
-            <span class="loading-icon spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span class="tree-node-icon spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        else if (status == NodeStatus.LoadedFailed)
+        {
+            <span class="tree-node-icon collapsable fas fa-exclamation-triangle" role="status" aria-hidden="true" title="Failed - Click to retry" @onclick="ExpandNode"></span>
+        }
+        else if (NodeObj.ChildNodes?.Count > 0 || NodeObj.LoadChildNodesFunc != null)
+        {
+            <span class="tree-node-icon collapsable @Icon" role="status" aria-hidden="true" @onclick="ExpandNode"></span>
         }
         else
         {
-            <span class="collapse-icon @Icon" @onclick="ExpandNode"></span>
+            <span class='tree-node-icon fas'></span>
         }
         <span class="tree-node-text @SelectedStyle" @onclick="NodeTextClicked">@NodeObj.Text</span>
+        <span class="tree-node-text @SelectedStyle" role="status" aria-hidden="true" @onclick="NodeTextClicked">@((MarkupString)NodeObj.Text)</span>
     </div>
     @if (NodeObj.IsExpanded && NodeObj.ChildNodes.Count > 0)
     {
@@ -24,13 +33,20 @@
 </div>
 
 @code {
+    private enum NodeStatus
+    {
+        Normal = 0,
+        Loading = 1,
+        LoadedFailed = 2,
+    }
+
     [Parameter]
     public TreeNodeObject NodeObj { get; set; }
 
     [CascadingParameter]
     private TreeView ContainerTreeView { get; set; }
 
-    bool isLoading = false;
+    NodeStatus status = NodeStatus.Normal;
 
     string Icon
     {
@@ -74,15 +90,26 @@
             {
                 if (NodeObj?.LoadChildNodesFunc != null)
                 {
-                    isLoading = true;
+                    status = NodeStatus.Loading;
                     StateHasChanged();
-                    var nodes = await NodeObj?.LoadChildNodesFunc(NodeObj);
+                    var nodes = new List<TreeNodeObject>();
+                    try
+                    {
+                        nodes.AddRange(await NodeObj?.LoadChildNodesFunc(NodeObj));
+                    }
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine(exc.ToString());
+                        status = NodeStatus.LoadedFailed;
+                        StateHasChanged();
+                        return;
+                    }
                     NodeObj.ChildNodes.AddRange(nodes);
                 }
             }
         }
         NodeObj.IsExpanded = !NodeObj.IsExpanded;
-        isLoading = false;
+        status = NodeStatus.Normal;
         StateHasChanged();
 
         if (!NodeObj.IsExpanded && ContainerTreeView.OnNodeCollapsed != null)
