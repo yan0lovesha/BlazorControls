@@ -10,11 +10,11 @@
 
 @code {
     [Parameter]
-    private List<TreeNodeObject> RootNodes { get; set; }
+    public List<TreeNodeObject> RootNodes { get; set; }
     [Parameter]
     public TreeNodeObject SelectedNode { get; set; }
     [Parameter]
-    private bool ExpandAll { get; set; }
+    public bool ExpandAll { get; set; }
 
     [Parameter]
     public Action<TreeNodeObject> OnNodeSelected { get; set; } = (nodeObj) => { };
