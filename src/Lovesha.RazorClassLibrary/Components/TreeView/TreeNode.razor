@@ -1,0 +1,129 @@
+﻿@using Lovesha.RazorClassLibrary
+
+<div class="tree-node">
+    <div class="tree-parent">
+        @if (status == NodeStatus.Loading)
+        {
+            <span class="tree-node-icon spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        else if (status == NodeStatus.LoadedFailed)
+        {
+            <span class="tree-node-icon collapsable fas fa-exclamation-triangle" role="status" aria-hidden="true" title="Failed - Click to retry" @onclick="ExpandNode"></span>
+        }
+        else if (NodeObj.ChildNodes?.Count > 0 || NodeObj.LoadChildNodesFunc != null)
+        {
+            <span class="tree-node-icon collapsable @Icon" role="status" aria-hidden="true" @onclick="ExpandNode"></span>
+        }
+        else
+        {
+            <span class='tree-node-icon fas'></span>
+        }
+        <span class="tree-node-text @SelectedStyle" @onclick="NodeTextClicked">@NodeObj.Text</span>
+        <span class="tree-node-text @SelectedStyle" role="status" aria-hidden="true" @onclick="NodeTextClicked">@((MarkupString)NodeObj.Text)</span>
+    </div>
+    @if (NodeObj.IsExpanded && NodeObj.ChildNodes.Count > 0)
+    {
+        <div class="tree-children">
+            @foreach (var child in NodeObj.ChildNodes)
+            {
+                <TreeNode NodeObj="@child"></TreeNode>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private enum NodeStatus
+    {
+        Normal = 0,
+        Loading = 1,
+        LoadedFailed = 2,
+    }
+
+    [Parameter]
+    public TreeNodeObject NodeObj { get; set; }
+
+    [CascadingParameter]
+    private TreeView ContainerTreeView { get; set; }
+
+    NodeStatus status = NodeStatus.Normal;
+
+    string Icon
+    {
+        get
+        {
+            if (NodeObj.IsExpanded)
+            {
+                return "oi oi-chevron-bottom";
+            }
+            else
+            {
+                return "oi oi-chevron-right";
+            }
+        }
+    }
+
+    string SelectedStyle
+    {
+        get
+        {
+            if (ContainerTreeView.SelectedNode == NodeObj)
+            {
+                return "selected";
+            }
+            return "";
+        }
+    }
+
+    private async void ExpandNode()
+    {
+        if (NodeObj.IsExpanded)
+        {
+            if (NodeObj.AlwaysReloadChildren)
+            {
+                NodeObj.ChildNodes.Clear();
+            }
+        }
+        else
+        {
+            if (NodeObj.AlwaysReloadChildren || NodeObj.ChildNodes.Count == 0)
+            {
+                if (NodeObj?.LoadChildNodesFunc != null)
+                {
+                    status = NodeStatus.Loading;
+                    StateHasChanged();
+                    var nodes = new List<TreeNodeObject>();
+                    try
+                    {
+                        nodes.AddRange(await NodeObj?.LoadChildNodesFunc(NodeObj));
+                    }
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine(exc.ToString());
+                        status = NodeStatus.LoadedFailed;
+                        StateHasChanged();
+                        return;
+                    }
+                    NodeObj.ChildNodes.AddRange(nodes);
+                }
+            }
+        }
+        NodeObj.IsExpanded = !NodeObj.IsExpanded;
+        status = NodeStatus.Normal;
+        StateHasChanged();
+
+        if (!NodeObj.IsExpanded && ContainerTreeView.OnNodeCollapsed != null)
+        {
+            ContainerTreeView.OnNodeCollapsed(NodeObj);
+        }
+        if (NodeObj.IsExpanded && ContainerTreeView.OnNodeExpanded != null)
+        {
+            ContainerTreeView.OnNodeExpanded(NodeObj);
+        }
+    }
+
+    private void NodeTextClicked()
+    {
+        ContainerTreeView.NodeSelected(NodeObj);
+    }
+}

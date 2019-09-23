@@ -1,0 +1,37 @@
+﻿@using Newtonsoft.Json.Linq
+
+<div class="JsonViewerField">
+    @if (ValueExpandable)
+    {
+        <span class="oi oi-caret-right"></span>
+    }
+    <span>@Key : @ValueString</span>
+</div>
+
+@code {
+    private string Key { get; set; }
+    private JToken Value { get; set; }
+
+    private bool ValueExpandable
+    {
+        get
+        {
+            return Value.Type == JTokenType.Array || Value.Type == JTokenType.Object;
+        }
+    }
+
+    private string ValueString
+    {
+        get
+        {
+            if (ValueExpandable)
+            {
+                return "{...}";
+            }
+            else
+            {
+                return Value.ToString();
+            }
+        }
+    }
+}
